@@ -15,3 +15,9 @@ def test_epoch_to_date():
     datetime = converter.e2d(epoch)
     assert datetime == "2012-07-09T22:27:50"
 
+def test_epoch_to_date_at_time_zero():
+    converter = Datetime2Epoch()
+    epoch = 0
+    datetime = converter.e2d(epoch)
+    assert datetime == "1970-01-01T00:00:00"
+
