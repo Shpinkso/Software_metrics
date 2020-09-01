@@ -2,6 +2,9 @@
 login.yml
 test_login.yml
 
+# temp files
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
