@@ -18,7 +18,6 @@ def test_get_latest_date_in_table():
     cursor = test_db.cursor()
     try:
         cursor.execute("DROP TABLE IF EXISTS test_commits")
-        test_db.commit()
     except:
         assert False
     sql = """CREATE TABLE test_commits (
@@ -27,7 +26,6 @@ def test_get_latest_date_in_table():
              DATETIME VARCHAR(30) NOT NULL)"""
     try:
         cursor.execute(sql)
-        test_db.commit()
     except:
         assert False
     
@@ -64,7 +62,8 @@ def test_get_latest_date_in_table():
 
     database = DBInterface('test_')
     database.connect()
-    latest = database.get_most_recent_record_date('DATETIME','test_commits')
+    database.set_table('test_commits')
+    latest = database.get_max_value('DATETIME')
 
     assert latest[0] == "2016-01-02T00:00:01"
 
