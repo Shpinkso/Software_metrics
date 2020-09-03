@@ -7,9 +7,12 @@ gitlab_project_id = 278964
 def test_object_creation():
     gl_metrics = GitlabMetrics(testmode)
 
-def test_connection():
+def test_valid_connection_should_authorise():
     gl_metrics = GitlabMetrics(testmode)
-    gl_metrics.connect()
+    try:
+        gl_metrics.connect()
+    except Exception as e:
+        assert False, "{}".format(e)
 
 def test_load_project_gets_the_right_id():
     gl_metrics = GitlabMetrics(testmode)
