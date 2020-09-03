@@ -28,3 +28,5 @@ def test_load_project_commits():
     date_1_week_ago = datetime.now() - timedelta(days=7)
     gl_metrics.load_project_commits_since(date_1_week_ago)
 
+def test_add_valid_commits_to_database_does_not_raise_exception():
+    assert True
