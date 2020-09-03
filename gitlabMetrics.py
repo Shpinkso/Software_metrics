@@ -12,6 +12,10 @@ class GitlabMetrics:
         self.db_connector = DBInterface(testmode);
     def connect(self):
         self.gl = gitlab.Gitlab(self.gl_server, private_token=self.api_key)
+        try:
+            self.gl.auth()
+        except:
+            raise
         self.db_connector.connect()
         self.db_connector.set_table(self.commits_tbl)
     def load_project(self, project_id):
