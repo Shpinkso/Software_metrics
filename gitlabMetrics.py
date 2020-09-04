@@ -1,7 +1,9 @@
 import gitlab
 import yaml
+import time
 from datetime import datetime
 from db_wrapper import *
+from datetime2epoch import *
 
 class GitlabMetrics:
     def __init__(self, testmode):
@@ -28,7 +30,11 @@ class GitlabMetrics:
         date_tup = self.db_connector.get_max_value()
         return date_tup[0]
     def add_commits_to_database(self):
+        converter = Datetime2Epoch()
         for commit in self.commits:
-            schema_tup = (commit.id, commit.committer_name, commit.committed_date)
+            epoch_time = converter.d2e(commit.committed_date)
+            dt = converter.clean_datetime(commit.committed_date)
+            print("add {}, {}, {}, {}".format(commit.id, commit.committer_name, dt, epoch_time))
+            schema_tup = (commit.id, commit.committer_name, dt.strftime('%Y-%m-%d %H:%M:%S'), epoch_time)
             self.db_connector.insert(schema_tup)
           
