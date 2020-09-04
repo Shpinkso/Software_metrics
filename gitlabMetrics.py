@@ -8,7 +8,7 @@ class GitlabMetrics:
         login_dict = yaml.safe_load(open('{}login.yml'.format(testmode)))
         self.gl_server = login_dict.get('gitlab_url')
         self.api_key = login_dict.get('gitlab_api_key')
-        self.commits_tbl = login_dict.get('git_commits_table')
+        self.commits_tbl = login_dict.get('git_commit_table')
         self.db_connector = DBInterface(testmode);
     def connect(self):
         self.gl = gitlab.Gitlab(self.gl_server, private_token=self.api_key)
@@ -31,4 +31,4 @@ class GitlabMetrics:
         for commit in self.commits:
             schema_tup = (commit.id, commit.committer_name, commit.committed_date)
             self.db_connector.insert(schema_tup)
-        
+          

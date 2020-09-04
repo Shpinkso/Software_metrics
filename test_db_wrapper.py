@@ -56,15 +56,15 @@ def make_test_database():
     
     yield test_db
     #teardown
-#    cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
+    cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
 
 
 class Test_Basic():
 
-    def test_object_creation():
+    def test_object_creation(self):
         database = DBInterface('test_')
 
-    def test_connection():
+    def test_connection(self):
         database = DBInterface('test_')
         database.connect()
 
@@ -108,11 +108,12 @@ class Test_On_Existing_DB():
         database.connect()
         database.set_table(table_name)
         
-        new_row = (1, 'new', '2016-01-02T00:00:01')
+        new_row = (4, 'new', '2016-01-02T00:00:01')
         try:
             database.insert(new_row)
         except:
             assert False
+        test_db.begin() # as we're using another cursor, let it know we need to re-read.
         new_rows = test_db_cursor.execute("SELECT * FROM {}".format(table_name))
         assert test_db_cursor.rowcount == new_rows
         assert initial_rows + 1 == new_rows 
