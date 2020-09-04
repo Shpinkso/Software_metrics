@@ -17,8 +17,15 @@ def iso8601_to_epoch(datestring):
 '''
 
 class Datetime2Epoch:
-    def d2e(self, dt):
-        return calendar.timegm(datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f").timetuple())
+    def clean_datetime(self, dt):
+        removed_zone = dt.split('+',1)[0]
+        clean_datetime = datetime.strptime(removed_zone, '%Y-%m-%dT%H:%M:%S.%f')
+        return clean_datetime
+    def d2e(self, dt_string):
+        dt = self.clean_datetime(dt_string)
+        print("converting {}".format(dt))
+        return calendar.timegm(dt.timetuple())
+#        return calendar.timegm(datetime.strptime(dt_no_timezone, "%Y-%m-%dT%H:%M:%S.%f").timetuple())
     def e2d(self, e):
         mytime = time.gmtime(e)
         return time.strftime('%Y-%m-%dT%H:%M:%S', mytime)
