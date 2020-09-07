@@ -12,6 +12,10 @@ class GitlabMetrics:
         self.api_key = login_dict.get('gitlab_api_key')
         self.commits_tbl = login_dict.get('git_commit_table')
         self.db_connector = DBInterface(testmode);
+        if testmode == 'test_':
+            self.all_commits = False
+        else:
+            self.all_commits = True
     def connect(self):
         self.gl = gitlab.Gitlab(self.gl_server, private_token=self.api_key)
         try:
@@ -25,7 +29,7 @@ class GitlabMetrics:
     def get_project(self):
         return self.project
     def load_project_commits_since(self, time: datetime):
-        self.commits = self.project.commits.list(all=True,since=time)
+        self.commits = self.project.commits.list(all=self.all_commits,since=time)
     def get_date_of_last_commit_in_database(self) -> datetime:
         date_tup = self.db_connector.get_max_value('COMMIT_DT')
         return date_tup[0]
