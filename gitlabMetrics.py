@@ -25,9 +25,9 @@ class GitlabMetrics:
     def get_project(self):
         return self.project
     def load_project_commits_since(self, time: datetime):
-        self.commits = self.project.commits.list(since=time)
+        self.commits = self.project.commits.list(all=True,since=time)
     def get_date_of_last_commit_in_database(self) -> datetime:
-        date_tup = self.db_connector.get_max_value()
+        date_tup = self.db_connector.get_max_value('COMMIT_DT')
         return date_tup[0]
     def add_commits_to_database(self):
         converter = Datetime2Epoch()
