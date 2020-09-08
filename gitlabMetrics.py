@@ -37,7 +37,7 @@ class GitlabMetrics:
         converter = Datetime2Epoch()
         for commit in self.commits:
             print("gitlab datetime {}".format(commit.committed_date))
-            dt = converter.string_to__datetime(commit.committed_date)
+            dt = converter.string_to_datetime(commit.committed_date)
             epoch_time = converter.d2e(dt)
             schema_tup = (commit.id, commit.committer_name, dt.strftime('%Y-%m-%d %H:%M:%S'), epoch_time)
             print("add {}".format(schema_tup))
