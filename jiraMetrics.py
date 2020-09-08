@@ -24,9 +24,9 @@ class JiraMetrics:
                 self.project = project_key
                 return
         raise ValueError("project key {} does not exist".format(project_key))
-    def load_done_project_issues_since(self, time: datetime):
+    def load_done_project_issues_since(self, dt: str):
         converter = Datetime2Epoch()
-        datetime_obj = converter.clean_datetime(time)
+        datetime_obj = converter.string_to_datetime(dt)
         jira_dt_str = "{}-{}-{} {}:{}".format(datetime_obj.year,
                                               datetime_obj.month,
                                               datetime_obj.day,
@@ -39,20 +39,18 @@ class JiraMetrics:
     def get_loaded_issues(self):
         return self.issues
     def get_date_of_last_done_issue_in_database(self):
-        date_tup = self.db_connector.get_max_value('UPDATED_DT')
+        date_tup = self.db_connector.get_max_value('UPDATED')
         return date_tup[0]
-    def __get_lead_time(self, created, updated):
-        converter = Datetime2Epoch()
-        dt_updated = converter(updated)
-        dt_created = converter(created)
-        delta = dt_updated - dt_created
-        return delta
     def add_issues_to_database(self):
+        converter = Datetime2Epoch()
         for issue in self.issues:
-            leadtime = self.__get_lead_time(issue.fields.created,issue.fields.updated)
-            print("add {}, {}, {}, {}".format(issue.key,
-                                              issue.fields.created,
-                                              issue.fields.updated,
-                                              leadtime))
-            schema_tup = (issue.key, issue.fields.created,issue.fields.updated,leadtime)
+            created = converter.string_to_datetime(issue.fields.created)
+            updated = converter.string_to_datetime(issue.fields.updated)
+            leadtime = updated - created
+            lt_hours = leadtime.total_seconds() / 60 / 60
+            schema_tup = (issue.key,
+                          created.strftime('%Y-%m-%d %H:%M:%S'),
+                          updated.strftime('%Y-%m-%d %H:%M:%S'),
+                          lt_hours)
+            print("add {}".format(schema_tup))
             self.db_connector.insert(schema_tup)
