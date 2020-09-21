@@ -8,6 +8,7 @@ class DBInterface:
         self.user = login_dict.get('mysql_user')
         self.pw = login_dict.get('mysql_password')
         self.db = login_dict.get('mysql_db')
+        self.string_len_max = 40
     def connect(self):
         self.mydb = pymysql.connect(self.url, self.user, self.pw, self.db)
         self.cursor = self.mydb.cursor()
@@ -23,11 +24,20 @@ class DBInterface:
     def get_max_value(self, max_of):
         self.cursor.execute("select MAX({}) from {};".format(max_of,self.table))
         return self.cursor.fetchone()
-    def insert(self, schema_tup):
+    def __truncate_strings(self, schema_tup):
+        truncated_tup = ()
+        for value in schema_tup:
+            if isinstance(value, str):
+                truncated_tup = truncated_tup + (value[:self.string_len_max-1],)
+            else:
+                truncated_tup = truncated_tup + (value,)
+        return truncated_tup
+    def insert(self, values_tup):
+        schema_tup =self. __truncate_strings(values_tup)
         try:
             self.cursor.execute("INSERT INTO {} VALUES {}".format(self.table, schema_tup))
             self.mydb.commit()
         except:
             self.mydb.rollback()
-            raise
+            raise 
 

@@ -16,7 +16,7 @@ def make_test_database():
     cursor = test_db.cursor()
     sql = """CREATE TABLE {} (
              COMMIT_ID INT(20) NOT NULL, 
-             AUTHOR_NAME VARCHAR(20) NOT NULL, 
+             AUTHOR_NAME VARCHAR(40) NOT NULL, 
              DATETIME VARCHAR(30) NOT NULL)""".format(table_name)
     try:
         cursor.execute(sql)
@@ -117,6 +117,28 @@ class Test_On_Existing_DB():
         new_rows = test_db_cursor.execute("SELECT * FROM {}".format(table_name))
         assert test_db_cursor.rowcount == new_rows
         assert initial_rows + 1 == new_rows 
+
+    def test_insert_name_too_long_succeeds_with_truncated_name(self, make_test_database):
+        test_db = make_test_database
+        login_dict = yaml.safe_load(open('test_login.yml'))
+        table_name = login_dict.get('mysql_test_table')
+        test_db_cursor = test_db.cursor()
+        initial_rows = test_db_cursor.execute("SELECT * FROM {}".format(table_name))
+        
+        database = DBInterface('test_')
+        database.connect()
+        database.set_table(table_name)
+        
+        new_row = (5, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '2016-01-02T00:00:01')
+        try:
+            database.insert(new_row)
+        except Exception as e:
+            assert False, "{}".format(e)
+        test_db.begin() # as we're using another cursor, let it know we need to re-read.
+        new_rows = test_db_cursor.execute("SELECT * FROM {}".format(table_name))
+        assert test_db_cursor.rowcount == new_rows
+        assert initial_rows + 1 == new_rows 
+
 
     def test_insert_invalue_schema_record_results_in_exception(self, make_test_database):
         assert True
