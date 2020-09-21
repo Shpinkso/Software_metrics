@@ -24,7 +24,7 @@ class Datetime2Epoch:
             result = parser.parse(dt)
 #        removed_zone = dt.split('+',1)[0] # We're removing the timezone to simplify. We only care about days for now
 #        result = datetime.strptime(removed_zone, '%Y-%m-%dT%H:%M:%S.%f')
-        print("converted {} {} to {} {}".format(type(dt),dt, type(result),result))
+        print("converted {} to {}".format(dt, result))
         return result
     def d2e(self, dt: datetime) -> int:
         return calendar.timegm(dt.timetuple())
